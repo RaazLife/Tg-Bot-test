@@ -35,7 +35,7 @@ bot.onText(/\/start/, (msg) => {
         }
     };
 
-    // Send the greeting image first
+    // Send the greeting image and buttons
     bot.sendPhoto(chatId, greetingImageUrl, { caption: `Hi ${username}, welcome to our bot! Please choose an option:` })
         .then(() => {
             // Send the buttons after the image
@@ -49,8 +49,10 @@ bot.onText(/\/start/, (msg) => {
 // Listen for any incoming messages
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
-    console.log(`Received message: ${msg.text} from chatId: ${chatId}`); // Log incoming messages
-    bot.sendMessage(chatId, 'You said: ' + msg.text);
+
+    // Send a greeting message regardless of user input
+    const username = msg.from.first_name || 'User'; // Get the user's first name
+    bot.sendMessage(chatId, `Hi ${username}, welcome to our bot!`);
 });
 
 // Handle button clicks (for additional interaction if needed)
