@@ -5,11 +5,8 @@ require('dotenv').config();
 // Use the token from the .env file
 const token = process.env.TELEGRAM_TOKEN;
 
-// Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(token, { polling: true });
-
-// Log that the bot has started
-console.log('Bot is starting...');
+// Create a bot that uses 'webhook' to fetch new updates
+const bot = new TelegramBot(token);
 
 // Base URL for the mini web app
 const miniWebAppUrl = "https://your-mini-web-app.com"; // Replace with your actual URL
@@ -57,3 +54,14 @@ bot.on('callback_query', (query) => {
 
     bot.sendMessage(chatId, `You selected: ${option}`);
 });
+
+// For Vercel deployment, export as a serverless function
+module.exports = (req, res) => {
+    if (req.method === 'POST') {
+        const update = req.body;
+        bot.processUpdate(update);
+        res.status(200).send('OK');
+    } else {
+        res.status(200).send('Hello from Vercel!');
+    }
+};
