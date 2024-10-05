@@ -5,8 +5,11 @@ require('dotenv').config();
 // Use the token from the .env file
 const token = process.env.TELEGRAM_TOKEN;
 
-// Create a bot that uses 'webhook' to fetch new updates
-const bot = new TelegramBot(token);
+// Create a bot that uses 'polling' to fetch new updates
+const bot = new TelegramBot(token, { polling: true });
+
+// Log that the bot has started
+console.log('Bot is starting...');
 
 // Base URL for the mini web app
 const miniWebAppUrl = "https://your-mini-web-app.com"; // Replace with your actual URL
@@ -20,7 +23,7 @@ bot.onText(/\/start/, (msg) => {
     const username = msg.from.first_name || 'User'; // Get the user's first name
 
     // Generate a referral link (customize as needed)
-    const referralLink = `https://your-referral-site.com/referral?userId=${msg.from.id}`;
+    const referralLink = `https://your-referral-site.com/referral?userId=${msg.from.id}`; // Replace with your actual referral link
 
     // Create buttons with web app link and referral link
     const options = {
@@ -37,6 +40,9 @@ bot.onText(/\/start/, (msg) => {
         .then(() => {
             // Send the buttons after the image
             bot.sendMessage(chatId, 'Please choose an option:', options);
+        })
+        .catch(err => {
+            console.error('Error sending photo:', err);
         });
 });
 
@@ -55,13 +61,7 @@ bot.on('callback_query', (query) => {
     bot.sendMessage(chatId, `You selected: ${option}`);
 });
 
-// For Vercel deployment, export as a serverless function
-module.exports = (req, res) => {
-    if (req.method === 'POST') {
-        const update = req.body;
-        bot.processUpdate(update);
-        res.status(200).send('OK');
-    } else {
-        res.status(200).send('Hello from Vercel!');
-    }
-};
+// Optional: Handle errors
+bot.on('polling_error', (error) => {
+    console.error('Polling error:', error);
+});
