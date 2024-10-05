@@ -5,25 +5,17 @@ require('dotenv').config();
 // Use the token from the .env file
 const token = process.env.TELEGRAM_TOKEN;
 
-// Create a bot instance
-const bot = new TelegramBot(token);
+// Create a bot that uses 'polling' to fetch new updates
+const bot = new TelegramBot(token, { polling: true });
+
+// Log that the bot has started
+console.log('Bot is starting...');
 
 // Base URL for the mini web app
 const miniWebAppUrl = "https://your-mini-web-app.com"; // Replace with your actual URL
 
 // URL for the greeting image (Python logo)
 const greetingImageUrl = "https://www.python.org/static/img/python-logo.png";
-
-// Handle incoming webhook requests
-module.exports = (req, res) => {
-    if (req.method === 'POST') {
-        const update = req.body;
-        bot.processUpdate(update);
-        res.status(200).send('OK');
-    } else {
-        res.status(200).send('Hello from Vercel!');
-    }
-};
 
 // Listen for the '/start' command
 bot.onText(/\/start/, (msg) => {
